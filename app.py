@@ -11,12 +11,30 @@ def get_data():
     # Streamlit akan otomatis mengambil URL dari Secrets yang baru saja Anda simpan
     return conn.read(ttl=0)
 
+import gspread
+
+# Ganti fungsi add_data lama dengan ini
 def add_data(new_row):
-    df_existing = get_data()
-    df_existing = df_existing.dropna(how="all")
-    updated_df = pd.concat([df_existing, pd.DataFrame([new_row])], ignore_index=True)
-    # Update kembali ke Google Sheets
-    conn.update(data=updated_df)
+    # Link ke Google Sheets kamu
+    SHEET_URL = "https://docs.google.com/spreadsheets/d/1_PnbYxjwbb_ElF9tgsdGu9_2zqh_AqZ37z5mwMP90ME/edit"
+    
+    # Menggunakan gspread untuk menulis data secara publik
+    # (Pastikan Sheet tetap 'Anyone with the link can EDITOR')
+    gc = gspread.public_api()
+    sh = gc.open_by_url(SHEET_URL)
+    worksheet = sh.get_worksheet(0) # Ambil sheet pertama
+    
+    # Mengubah dictionary ke list sesuai urutan kolom: 
+    # ID, Nama, Stok, Lokasi, Terakhir_Update
+    row_to_add = [
+        new_row["ID_Barang"], 
+        new_row["Nama_Barang"], 
+        new_row["Stok"], 
+        new_row["Lokasi_Rak"], 
+        new_row["Terakhir_Update"]
+    ]
+    
+    worksheet.append_row(row_to_add)
 
 # --- 3. SISTEM LOGIN ---
 def check_password():
@@ -102,6 +120,7 @@ if check_password():
         st.info("Fitur Edit/Hapus tersedia jika Anda menggunakan Google Sheets secara langsung.")
         st.write("Akses Database Langsung:")
         st.link_button("Buka Google Sheets", "https://docs.google.com/spreadsheets/d/1_PnbYxjwbb_ElF9tgsdGu9_2zqh_AqZ37z5mwMP90ME/edit")
+
 
 
 

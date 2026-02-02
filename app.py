@@ -8,7 +8,7 @@ from datetime import datetime
 conn = st.connection("gsheets", type=GSheetsConnection)
 
 def get_data():
-    # Mengambil data berdasarkan konfigurasi di Streamlit Cloud Secrets
+    # Streamlit akan otomatis mengambil URL dari Secrets yang baru saja Anda simpan
     return conn.read(ttl=0)
 
 def add_data(new_row):
@@ -101,3 +101,4 @@ if check_password():
         st.write("Akses Database Langsung:")
 
         st.link_button("Buka Google Sheets", SHEET_URL)
+

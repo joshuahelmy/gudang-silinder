@@ -98,8 +98,11 @@ if check_password():
                     st.warning("Isi ID dan Nama!")
 
     with tab3:
+        st.subheader("Pengaturan Database")
+        st.info("Fitur Edit/Hapus tersedia jika Anda menggunakan Google Sheets secara langsung.")
         st.write("Akses Database Langsung:")
         st.link_button("Buka Google Sheets", "https://docs.google.com/spreadsheets/d/1_PnbYxjwbb_ElF9tgsdGu9_2zqh_AqZ37z5mwMP90ME/edit")
+
 
 
 

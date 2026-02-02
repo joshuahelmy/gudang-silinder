@@ -15,26 +15,17 @@ import gspread
 
 # Ganti fungsi add_data lama dengan ini
 def add_data(new_row):
-    # Link ke Google Sheets kamu
+    # 1. Ambil data lama
+    df_existing = get_data()
+    
+    # 2. Tambahkan baris baru ke dalam data lama
+    new_df = pd.DataFrame([new_row])
+    updated_df = pd.concat([df_existing, new_df], ignore_index=True)
+    
+    # 3. Kirim kembali ke Google Sheets
+    # Kita tambahkan parameter spreadsheet secara spesifik di sini
     SHEET_URL = "https://docs.google.com/spreadsheets/d/1_PnbYxjwbb_ElF9tgsdGu9_2zqh_AqZ37z5mwMP90ME/edit"
-    
-    # Menggunakan gspread untuk menulis data secara publik
-    # (Pastikan Sheet tetap 'Anyone with the link can EDITOR')
-    gc = gspread.public_api()
-    sh = gc.open_by_url(SHEET_URL)
-    worksheet = sh.get_worksheet(0) # Ambil sheet pertama
-    
-    # Mengubah dictionary ke list sesuai urutan kolom: 
-    # ID, Nama, Stok, Lokasi, Terakhir_Update
-    row_to_add = [
-        new_row["ID_Barang"], 
-        new_row["Nama_Barang"], 
-        new_row["Stok"], 
-        new_row["Lokasi_Rak"], 
-        new_row["Terakhir_Update"]
-    ]
-    
-    worksheet.append_row(row_to_add)
+    conn.update(spreadsheet=SHEET_URL, data=updated_df)
 
 # --- 3. SISTEM LOGIN ---
 def check_password():
@@ -120,6 +111,7 @@ if check_password():
         st.info("Fitur Edit/Hapus tersedia jika Anda menggunakan Google Sheets secara langsung.")
         st.write("Akses Database Langsung:")
         st.link_button("Buka Google Sheets", "https://docs.google.com/spreadsheets/d/1_PnbYxjwbb_ElF9tgsdGu9_2zqh_AqZ37z5mwMP90ME/edit")
+
 
 
 

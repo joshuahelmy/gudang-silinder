@@ -3,27 +3,20 @@ import pandas as pd
 from streamlit_gsheets import GSheetsConnection
 from datetime import datetime
 
-# --- 1. KONFIGURASI HALAMAN ---
-st.set_page_config(page_title="Sistem Manajemen Gudang", layout="wide")
-
-# URL Database kamu
-SHEET_URL = "https://docs.google.com/spreadsheets/d/1_PnbYxjwbb_ElF9tgsdGu9_2zqh_AqZ37z5mwMP90ME/edit?gid=0#gid=0"
-
-# --- 2. FUNGSI DATABASE ---
-# Menggunakan koneksi GSheets tunggal
+# --- KONEKSI DATABASE ---
+# Kita tidak menggunakan URL di sini agar sistem membaca dari Secrets
 conn = st.connection("gsheets", type=GSheetsConnection)
 
 def get_data():
-    # Mengambil data dari URL langsung tanpa file JSON
-    return conn.read(spreadsheet=SHEET_URL, worksheet="Sheet1", ttl=0)
+    # Mengambil data berdasarkan konfigurasi di Streamlit Cloud Secrets
+    return conn.read(ttl=0)
 
 def add_data(new_row):
     df_existing = get_data()
-    # Membersihkan data kosong agar tidak error saat concat
     df_existing = df_existing.dropna(how="all")
     updated_df = pd.concat([df_existing, pd.DataFrame([new_row])], ignore_index=True)
     # Update kembali ke Google Sheets
-    conn.update(spreadsheet=SHEET_URL, data=updated_df)
+    conn.update(data=updated_df)
 
 # --- 3. SISTEM LOGIN ---
 def check_password():
@@ -106,4 +99,5 @@ if check_password():
 
     with tab3:
         st.write("Akses Database Langsung:")
+
         st.link_button("Buka Google Sheets", SHEET_URL)
